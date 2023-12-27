@@ -18,5 +18,15 @@ class Brand extends Model
         'brand_name',
         'brand_email',
         'company_id',
+        'slug',
     ];
+
+    public function products(){
+        // return $this->belongsToMany(Product::class, 'product_brand', 'id', 'id');
+    }
+    public function categories(){
+        return $this->belongsToMany(Category::class, 'category_brand', 'id', 'id');
+    }
+
+
 }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedBigInteger('company_id')->after('email');
-            $table->foreign('company_id')->references('company_id')->on('companies');
+            $table->foreign('company_id')->references('id')->on('companies');
         });
     }
 
@@ -23,8 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('company_id');
-            $table->foreign('company_id')->references('company_id')->on('companies');
+            $table->unsignedBigInteger('company_id')->after('email')->nullable();
+            $table->foreign('company_id')->references('id')->on('companies');
         });
     }
 };

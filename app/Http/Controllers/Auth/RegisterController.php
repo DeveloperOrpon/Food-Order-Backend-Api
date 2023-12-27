@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -50,9 +51,11 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
     }
 
@@ -64,10 +67,37 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        print_r($data);
         return User::create([
-            'name' => $data['name'],
+            'username' => $data['username'],
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+    public function register(Request $request){
+        $validator = Validator::make($request->all(), [
+            'username' => ['required','string','max:255'],
+            'first_name' => ['required','string','max:255'],
+            'last_name' => ['required','string','max:255'],
+            'email' => ['required','string', 'email','max:255', 'unique:users'],
+            'password' => ['required','string','min:6', 'confirmed'],
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 403);
+        }
+        $user = User::create([
+            'username' => $request->username,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'company_id' => $request->company_id,
+        ]);
+        $token = $user->createToken('authToken')->accessToken;
+        return response()->json(['token' => $token], 200);
+
     }
 }

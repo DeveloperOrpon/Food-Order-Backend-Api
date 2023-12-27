@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('brands', function (Blueprint $table) {
+        Schema::create('attributes', function (Blueprint $table) {
             $table->id();
-            $table->string('brand_name');
-            $table->string('slug');
-            $table->string('brand_email')->unique();
-            $table->string('brand_logo')->nullable();
-            $table->unsignedBigInteger('company_id')->nullable();
-            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-            $table->boolean('featured')->default(0)->comment('0=no, 1=yes');
+            $table->string('name');
+            $table->string('type');
+            $table->string('description');
+            $table->boolean('status')->default(1)->comment('0=inactive, 1=active');
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamps();
@@ -31,7 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('brands');
+        Schema::dropIfExists('attributes');
     }
-
 };

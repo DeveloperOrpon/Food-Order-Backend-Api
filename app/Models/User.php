@@ -24,6 +24,7 @@ class User extends Authenticatable implements JWTSubject
         'username',
         'email',
         'password',
+        'company_id',
     ];
 
     /**
@@ -67,5 +68,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    // public function wishList(){
+    //     return $this->hasMany(WishList::class, 'user_id', 'id');
+    // }
 
 }
