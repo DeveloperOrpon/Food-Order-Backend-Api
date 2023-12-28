@@ -169,6 +169,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+        Jenssegers\Agent\AgentServiceProvider::class,
+
     ])->toArray(),
 
     /*
@@ -185,5 +187,6 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
+    'Agent' => Jenssegers\Agent\Facades\Agent::class,
 
 ];

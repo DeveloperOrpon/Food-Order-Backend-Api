@@ -23,12 +23,7 @@ class ErrorResource extends JsonResource
     }
     public function toArray(Request $request): array
     {
-        return [
-            'message' => $this->errro ?? "Error occurred!",
-            'statusCode' => $this->statusCode ?? 401,
-            'success' => false,
-            'errors' => parent::toArray($request)
-        ];
+        return parent::toArray($request);
     }
     public function toResponse($request)
     {

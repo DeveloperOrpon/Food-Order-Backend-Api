@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
+use Jenssegers\Agent\Agent;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -25,6 +27,33 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'company_id',
+        'avatar',
+        'phone_number',
+        'address',
+        'city',
+        'state',
+        'country',
+        'zip_code',
+        'role',
+        'phone',
+        'zip',
+        'last_login_ip',
+        'last_login_at',
+        'last_login_from',
+        'subscription_package_id',
+        'fcm_token',
+        'notification_preference',
+        'is_active',
+        'is_active',
+        'updated_by',
+        'updated_at',
+        'gender',
+        'date_of_birth',
+        'cart_number',
+        'is_cart_verified',
+        'is_email_verified',
+        'is_phone_verified',
+
     ];
 
     /**
@@ -76,5 +105,38 @@ class User extends Authenticatable implements JWTSubject
     // public function wishList(){
     //     return $this->hasMany(WishList::class, 'user_id', 'id');
     // }
+
+    protected static function booted(){
+        static::creating(function($user){
+            $user->role = 'user';
+            $user->last_login_ip = request()->ip();
+            $user->last_login_at = now();
+            $agent = new Agent();
+            $device_name = '';
+            if ($agent->isDesktop()) {
+                $device_name = 'desktop';
+            } elseif ($agent->isTablet()) {
+                $device_name = 'tablet';
+            } elseif ($agent->isMobile()) {
+                $device_name = 'mobile';
+            }
+            $user->last_login_from = $device_name;
+        });
+        static::updated(function($user){
+            $user->last_login_ip = request()->ip();
+            $user->last_login_at = now();
+            $agent = new Agent();
+            $device_name = '';
+            if ($agent->isDesktop()) {
+                $device_name = 'desktop';
+            } elseif ($agent->isTablet()) {
+                $device_name = 'tablet';
+            } elseif ($agent->isMobile()) {
+                $device_name = 'mobile';
+            }
+            $user->last_login_from = $device_name;
+            $user->updated_at = now();
+        });
+    }
 
 }

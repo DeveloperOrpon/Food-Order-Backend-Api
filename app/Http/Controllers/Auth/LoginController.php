@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
 use App\Http\Resources\SuccessResource;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
@@ -20,18 +21,11 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    public function login(Request $request){
-
-        $request->validate([
-            'email' =>'required|email',
-            'password' => 'required','string','min:8',
-        ]);
-
+    public function login(LoginRequest $request){
         $credentials = $request->only('email', 'password');
         $token = Auth::attempt($credentials);
         if (Auth::attempt($credentials)) {
             $userInformation = Auth::user();
-            $token = $token;
 
             return SuccessResource::make([
                 'token' => $token,
