@@ -10,15 +10,15 @@ Run the static analyzer on the code base.
 docker-compose run --rm --build analysis
 ```
 
-
+dsjfosjfojff
 
 ```bash
-docker-compose run --rm --build tests
+docker-composf run --rm --build tests
 ```
 
 Run the static analyzer on the code base.
 
 ```bash
-docker-compose run --rm --build analysis
+docker-f run --rm --build analysis
 ```
 
