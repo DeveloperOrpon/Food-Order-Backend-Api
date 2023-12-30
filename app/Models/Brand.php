@@ -18,14 +18,24 @@ class Brand extends Model
         'brand_name',
         'brand_email',
         'company_id',
+        'brand_logo',
+        'description',
+        'featured',
         'slug',
     ];
 
     public function products(){
         // return $this->belongsToMany(Product::class, 'product_brand', 'id', 'id');
     }
-    public function categories(){
+    public function categories(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
         return $this->belongsToMany(Category::class, 'category_brand', 'id', 'id');
+    }
+
+    public  function company(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id', 'id', 'id');
+
     }
 
 

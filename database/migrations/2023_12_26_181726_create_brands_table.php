@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('brand_name');
             $table->string('slug');
             $table->string('brand_email')->unique();
+            $table->string('description')->nullable();
             $table->string('brand_logo')->nullable();
             $table->unsignedBigInteger('company_id')->nullable();
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');

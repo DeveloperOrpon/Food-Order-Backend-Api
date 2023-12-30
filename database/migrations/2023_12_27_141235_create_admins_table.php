@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('admins', function (Blueprint $table) {
-            $table->id('admin_id');
+            $table->id();
             $table->string('name', 80)->nullable();
             $table->string('phone', 25)->nullable();
-            $table->unsignedBigInteger('admin_role_id')->default(2);
+            $table->unsignedBigInteger('admin_role_id')->nullable();
             $table->foreign('admin_role_id')->references('id')->on('admin_roles');
             $table->string('image', 30)->default('def.png');
             $table->string('email', 80)->unique();

@@ -168,7 +168,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+        // Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         Jenssegers\Agent\AgentServiceProvider::class,
 
     ])->toArray(),

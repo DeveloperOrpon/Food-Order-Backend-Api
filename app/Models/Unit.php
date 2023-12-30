@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Unit extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'value',
+        'slug',
+        'description',
+        'status',
+    ];
 }

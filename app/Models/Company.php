@@ -14,11 +14,21 @@ class Company extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'company_name',
-        'company_email',
+        'name',
+        'email',
+        'phone',
+        'address',
+        'city',
+        'country',
+        'description',
+        'logo',
+        'email',
+        'email',
+        'state',
     ];
 
-    public function brand(){
-        return $this->hasMany(Brand::class, 'brand_id', 'id');
+    public function brands(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Brand::class,'company_id');
     }
 }
