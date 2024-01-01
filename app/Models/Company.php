@@ -31,4 +31,6 @@ class Company extends Model
     {
         return $this->hasMany(Brand::class,'company_id');
     }
+
+
 }

@@ -4,11 +4,16 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Filament\Resources\CompanyResource\RelationManagers;
+use App\Filament\Resources\CountryResource\RelationManagers\CitiesRelationManager;
+use App\Models\City;
 use App\Models\Company;
+use App\Models\Country;
+use App\Models\State;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Section;
 use Filament\Pages\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -16,6 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 
 class CompanyResource extends Resource
 {
@@ -23,31 +29,68 @@ class CompanyResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
-    protected static ?string $recordTitleAttribute='name';
-
+    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $navigationGroup ='Brand & Company';
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('name'),
-                TextInput::make('email'),
-                TextInput::make('phone'),
-                TextInput::make('address'),
-                TextInput::make('city'),
-                TextInput::make('state'),
-                TextInput::make('country'),
-                TextInput::make('description'),
+                Forms\Components\Section::make('Company Information')
+                    ->description('Please Fill All The Company Information Below')
+                    ->schema([
+                        TextInput::make('name')->required(),
+                        TextInput::make('email')->required()->email(),
+                        TextInput::make('phone'),
+                        Forms\Components\Textarea::make('description')
+                            ->rows(3)
+                            ->cols(100)
+                    ])->columns(3),
+                Forms\Components\Section::make('Address Information')
+                    ->description('Please Fill All The Company Address Information Below')
+                    ->schema([
+                        Forms\Components\Select::make('country_id')
+                            ->label('Country')
+                            ->options(Country::all()->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated( static function(Forms\Set $set){
+                                $set("state_id",null);
+                                $set("city_id",null);
+                            })
+                            ->required(),
+                        Forms\Components\Select::make('state_id')
+                            ->label('State')
+                            ->options(fn(Forms\Get $get): Collection=>State::query()->where('country_id',$get("country_id"))->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(static fn(Forms\Set $set)=>$set("city_id",null))
+                            ->required(),
+                        Forms\Components\Select::make('city_id')
+                            ->label('State')
+                            ->options(fn(Forms\Get $get): Collection=>City::query()->where('state_id',$get("state_id"))->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->required(),
+                        Forms\Components\Textarea::make('address')
+                        ->label('Full Address')
+                            ->rows(3)
+                            ->cols(100) ,
+                    ])->columns(3),
                 FileUpload::make('logo')
                     ->columns(1)
                     ->directory('company-image')
                     ->storeFileNamesIn('original-file')
-            ])->columns(3);
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+
                 Tables\Columns\TextColumn::make('id'),
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable(),
@@ -82,7 +125,8 @@ class CompanyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\BrandsRelationManager::class
+            RelationManagers\BrandsRelationManager::class,
+
         ];
     }
 
@@ -98,8 +142,8 @@ class CompanyResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            'Name'=>$record->name,
-            "Country"=>$record->country
+            'Name' => $record->name,
+            "Country" => $record->country
         ];
     }
 
@@ -119,8 +163,14 @@ class CompanyResource extends Resource
                 ->url(static::getUrl('index', ['record' => $record])),
         ];
     }
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
+    }
+
+    public static function canView(Model $record): bool
+    {
+        return parent::canView($record); // TODO: Change the autogenerated stub
     }
 }

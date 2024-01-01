@@ -106,7 +106,8 @@ class User extends Authenticatable implements JWTSubject
     //     return $this->hasMany(WishList::class, 'user_id', 'id');
     // }
 
-    protected static function booted(){
+    protected static function booted(): void
+    {
         static::creating(function($user){
             $user->role = 'user';
             $user->last_login_ip = request()->ip();
