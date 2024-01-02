@@ -14,8 +14,6 @@ return new  class extends Migration
         Schema::create('cities', function (Blueprint $table) {
             $table->id('id');
             $table->string('name');
-            $table->string('updated_at')->nullable();
-            $table->string('created_at')->nullable();
             $table->boolean('status')->default(1);
             $table->unsignedBigInteger('state_id');
             $table->foreign('state_id')->references('id')->on('states');

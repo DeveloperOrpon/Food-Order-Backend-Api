@@ -30,6 +30,8 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->brandName('FGI Y2G')
             ->favicon(asset('images/logo.png'))
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->login()
             ->colors([
                 'primary' => Color::Rose,

@@ -28,8 +28,8 @@ class BrandResource extends Resource
         return $form
             ->schema([
                 TextInput::make('brand_name')->required(),
-                TextInput::make('brand_email'),
-                Select::make('company_id')->label('Company')
+                TextInput::make('brand_email')->required()->email(),
+                Select::make('company_id')->label('Company')->required()
                     ->options(Company::all()->pluck('name', 'id'))
                     ->searchable(),
                 FileUpload::make('brand_logo')

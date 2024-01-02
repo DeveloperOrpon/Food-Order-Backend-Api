@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Run the migrations.s
      */
     public function up(): void
     {
@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('phone', 25)->nullable();
             $table->unsignedBigInteger('admin_role_id')->nullable();
             $table->foreign('admin_role_id')->references('id')->on('admin_roles');
-            $table->string('image', 30)->default('def.png');
+            $table->string('image', )->default('def.png');
             $table->string('email', 80)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password', 80);

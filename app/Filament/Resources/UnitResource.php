@@ -20,6 +20,7 @@ class UnitResource extends Resource
     protected static ?string $model = Unit::class;
 
     protected static string|null $navigationIcon = 'heroicon-o-calculator';
+    protected static ?string $navigationGroup ='Business settings';
 
     public static function form(Form $form): Form
     {

@@ -15,8 +15,16 @@ class Category extends Model
      *
      * */
     protected $fillable = [
-        'category_name',
-        'slug'
+        'name',
+        'slug',
+        'description',
+        "parent_id",
+        'brand_id',
+        'logo',
+        'banner',
+        'status',
+        'created_by',
+        'updated_by'
     ];
 
     public function attributes()
@@ -32,6 +40,21 @@ class Category extends Model
     public function categories(){
         return $this->belongsToMany(Category::class, 'category_category', 'id', 'id');
     }
+
+    public  function brand()
+    {
+        return $this->hasOne(Brand::class,'id','brand_id');
+    }
+
+    public function updateAdmin()
+    {
+        return $this->hasOne(Admin::class,'id','updated_by');
+    }
+    public final function parentCategory()
+    {
+        return $this->hasOne(Category::class,'id','parent_id');
+    }
+
 
     protected static function booted()
     {

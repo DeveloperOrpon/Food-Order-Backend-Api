@@ -22,7 +22,7 @@ class StateResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup ='Address Information';
+    protected static ?string $navigationGroup ='Business settings';
 
     public static function form(Form $form): Form
     {
