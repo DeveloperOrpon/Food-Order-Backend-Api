@@ -10,7 +10,8 @@ class City extends Model
     use HasFactory;
 
     protected $fillable =[
-        'name'
+        'name',
+        'state_id'
     ];
     public function state(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

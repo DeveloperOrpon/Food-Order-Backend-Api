@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Jenssegers\Agent\Agent;
 
 class Brand extends Model
 {
@@ -22,6 +24,9 @@ class Brand extends Model
         'description',
         'featured',
         'slug',
+        'created_by',
+        'updated_by',
+        'updated_at',
     ];
 
     public function products(){
@@ -38,5 +43,18 @@ class Brand extends Model
 
     }
 
+    public function admin(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Admin::class,'id',"updated_by");
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::updated(static function($user){
+            $user->updated_at = now();
+            $user->updated_by = Filament::auth()->user()->id;
+        });
+    }
 
 }

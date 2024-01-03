@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Filament\Resources\CompanyResource\RelationManagers;
 use App\Filament\Resources\CountryResource\RelationManagers\CitiesRelationManager;
+use App\Models\Category;
 use App\Models\City;
 use App\Models\Company;
 use App\Models\Country;
@@ -25,6 +26,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class CompanyResource extends Resource
 {
@@ -39,6 +41,7 @@ class CompanyResource extends Resource
         return $form
             ->schema([
                 FileUpload::make('logo')
+                    ->required()
                     ->columns(1)
                     ->label('Company Logo')
                     ->directory('company-image')
@@ -47,14 +50,24 @@ class CompanyResource extends Resource
                 Forms\Components\Section::make('Company Information')
                     ->description('Please Fill All The Company Information Below')
                     ->schema([
-                        TextInput::make('name')->required(),
-                        TextInput::make('email')->required()->email(),
+                        Forms\Components\TextInput::make('name')->required()
+                            ->live()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(static fn(string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
+                        Forms\Components\TextInput::make('slug')
+                            ->disabled()
+                            ->dehydrated()
+                            ->required()
+                            ->live()
+                            ->maxLength(255)
+                            ->unique(Category::class, 'slug', ignoreRecord: true),
+                        TextInput::make('email')->required()->email()->unique(),
                         TextInput::make('phone'),
                         Forms\Components\Textarea::make('description')
                             ->rows(3)
                             ->cols(100),
 
-                    ])->columns(3),
+                    ])->columns(4),
                 Forms\Components\Section::make('Address Information')
                     ->description('Please Fill All The Company Address Information Below')
                     ->schema([

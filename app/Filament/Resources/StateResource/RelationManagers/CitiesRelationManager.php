@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\StateResource\RelationManagers;
 
+use App\Models\Country;
+use App\Models\State;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -24,7 +26,14 @@ class CitiesRelationManager extends RelationManager
                     Forms\Components\TextInput::make('name')
                         ->required()
                         ->maxLength(255),
-                ])
+                    Forms\Components\Select::make('state_id')
+                        ->label('State')
+                        ->options(State::all()->pluck('name', 'id'))
+                        ->searchable()
+                        ->preload()
+                        ->live()
+                        ->required(),
+                ])->columns(2)
             ]);
     }
 
