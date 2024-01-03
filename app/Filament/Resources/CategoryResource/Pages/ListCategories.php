@@ -6,6 +6,7 @@ use App\Filament\Imports\CategoryImporter;
 use App\Filament\Resources\CategoryResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Colors\Color;
 
 class ListCategories extends ListRecords
 {
@@ -15,7 +16,10 @@ class ListCategories extends ListRecords
     {
         return [
             Actions\ImportAction::make()
-                ->importer(CategoryImporter::class),
+                ->importer(CategoryImporter::class)
+                ->color(Color::Green)
+            ->label('Import CSV ')
+            ,
             Actions\CreateAction::make(),
         ];
     }

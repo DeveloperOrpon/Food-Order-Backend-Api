@@ -12,6 +12,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,25 +23,32 @@ class BrandResource extends Resource
     protected static ?string $model = Brand::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-fire';
-    protected static ?string $navigationGroup ='Brand & Company';
+    protected static ?string $navigationGroup = 'Brand & Company';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('brand_name')->required(),
-                TextInput::make('brand_email')->required()->email(),
-                Select::make('company_id')->label('Company')->required()
-                    ->options(Company::all()->pluck('name', 'id'))
-                    ->searchable(),
                 FileUpload::make('brand_logo')
                     ->disk('public')
                     ->directory('brand')
                     ->visibility('public')
                     ->maxSize(512)
                     ->enableDownload()
-                    ->enableOpen()
+                    ->avatar()
+                    ->required()
                     ->preserveFilenames(),
-                Forms\Components\MarkdownEditor::make('description')
+                Forms\Components\Section::make('Brand Information')
+                    ->description('Input All The Information About Brand')
+                    ->schema([
+                        TextInput::make('brand_name')->required(),
+                        TextInput::make('brand_email')->required()->email(),
+                        Select::make('company_id')->label('Company')->required()
+                            ->options(Company::all()->pluck('name', 'id'))
+                            ->searchable(),
+                    ])->columns(3),
+                Forms\Components\MarkdownEditor::make('description')->columnSpanFull()
+
             ]);
     }
 
@@ -48,11 +56,12 @@ class BrandResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id'),
+                Tables\Columns\ImageColumn::make('brand_logo')->defaultImageUrl(asset('images/logo.png'))->label('Logo')->circular(),
                 Tables\Columns\TextColumn::make('brand_name')->searchable(),
                 Tables\Columns\TextColumn::make('brand_email')->searchable(),
-                Tables\Columns\TextColumn::make('company.name')->searchable(),
+                Tables\Columns\TextColumn::make('company.name')->searchable()->badge(),
                 Tables\Columns\TextColumn::make('description'),
+                Tables\Columns\TextColumn::make('created_at')->date()->label('Create Time')->badge()->color(Color::Cyan),
 
             ])
             ->filters([
@@ -87,6 +96,7 @@ class BrandResource extends Resource
             'edit' => Pages\EditBrand::route('/{record}/edit'),
         ];
     }
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
