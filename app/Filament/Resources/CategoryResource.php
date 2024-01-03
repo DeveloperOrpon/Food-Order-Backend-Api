@@ -12,6 +12,7 @@ use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
+use Filament\Infolists\Infolist;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -84,7 +85,7 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('logo'),
+                Tables\Columns\ImageColumn::make('logo')->circular(),
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('slug')->color('gray')->searchable(),
                 BadgeColumn::make('parentCategory.name')->colors(['info'])  ->label('Parent Category'),
@@ -137,6 +138,15 @@ class CategoryResource extends Resource
 
     public static function getNavigationBadgeColor(): ?string
     {
-        return 'success ';
+        return 'success';
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist->schema(
+            [
+                Tables\Columns\TextColumn::make('id')
+            ]
+        );
     }
 }

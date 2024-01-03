@@ -4,10 +4,52 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Product extends Model
 {
     use HasFactory;
+    protected $fillable =[
+        'name',
+        'slug',
+        'short_description',
+        'details',
+        'category_ids',
+        'brand_id',
+        'added_by',
+        'units',
+        'min_qty',
+        'refundable',
+        'images',
+        'thumbnail',
+        'featured',
+        'flash_deal',
+        'video_provider',
+        'video_url',
+        'variant_product',
+        'attributes',
+        'choice_options',
+        'variation',
+        'published',
+        'unit_price',
+        'purchase_price',
+        'regular_price',
+        'offer_price',
+        'tax',
+        'tax_type',
+        'discount',
+        'discount_type',
+        'current_stock',
+        'free_shipping',
+        'attachment',
+        'featured_status',
+        'on_sale',
+        'purchasable',
+        'date_on_sale_from',
+        'date_on_sale_to',
+        'updated_at',
+        'created_at',
+    ];
     protected $casts = [
         'brand_id' => 'integer',
         'min_qty' => 'integer',
