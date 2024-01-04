@@ -9,6 +9,11 @@ class State extends Model
 {
     use HasFactory;
 
+    protected $fillable=[
+        'country_id',
+        'name'
+    ];
+
 //    public function cities(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
 //    {
 ////         return $this->belongsToMany(Product::class, 'product_brand', 'id', 'id');

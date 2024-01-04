@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\StateResource\Pages;
 use App\Filament\Resources\StateResource\RelationManagers;
 use App\Models\City;
+use App\Models\Country;
 use App\Models\State;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
@@ -32,14 +33,14 @@ class StateResource extends Resource
                 ->description('Please Input State Information')
                 ->schema([
                     TextInput::make('name'),
-                    Forms\Components\Select::make('city_id')
-                        ->label('State')
-                        ->options(fn(Forms\Get $get): Collection=>City::query()->where('state_id',$get("state_id"))->pluck('name', 'id'))
+                    Forms\Components\Select::make('country_id')
+                        ->label('Country')
+                        ->options(Country::all()->pluck('name', 'id'))
                         ->searchable()
                         ->preload()
                         ->live()
                         ->required(),
-                ])
+                ])->columns(2)
             ]);
     }
 

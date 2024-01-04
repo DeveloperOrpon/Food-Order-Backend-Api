@@ -42,7 +42,6 @@ class CategoryResource extends Resource
                             ->live()
                             ->live(onBlur: true)
                             ->afterStateUpdated(fn(string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
-
                         Forms\Components\TextInput::make('description'),
                         Forms\Components\TextInput::make('slug')
                             ->disabled()

@@ -25,6 +25,7 @@ class Company extends Model
         'email',
         'email',
         'state',
+        'slug',
     ];
 
     public function brands(): \Illuminate\Database\Eloquent\Relations\HasMany

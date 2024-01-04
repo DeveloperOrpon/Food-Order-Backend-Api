@@ -57,11 +57,12 @@ class BrandResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('brand_logo')->defaultImageUrl(asset('images/logo.png'))->label('Logo')->circular(),
-                Tables\Columns\TextColumn::make('brand_name')->searchable(),
-                Tables\Columns\TextColumn::make('brand_email')->searchable(),
+                Tables\Columns\TextColumn::make('brand_name')->searchable()->label('Name'),
+                Tables\Columns\TextColumn::make('brand_email')->searchable()->label('Email'),
                 Tables\Columns\TextColumn::make('company.name')->searchable()->badge(),
-                Tables\Columns\TextColumn::make('description'),
                 Tables\Columns\TextColumn::make('created_at')->date()->label('Create Time')->badge()->color(Color::Cyan),
+                Tables\Columns\TextColumn::make('admin.name')->label('Updated By')->badge()->color(Color::Gray),
+                Tables\Columns\ToggleColumn::make('status'),
 
             ])
             ->filters([
