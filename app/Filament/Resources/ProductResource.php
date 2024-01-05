@@ -11,6 +11,7 @@ use App\Models\Country;
 use App\Models\Product;
 use App\Models\Unit;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
@@ -20,9 +21,17 @@ use Filament\Forms\Form;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\BooleanConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\NumberConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use PhpParser\Node\Scalar;
 
@@ -44,11 +53,14 @@ class ProductResource extends Resource
                         Tabs\Tab::make('English')
                             ->schema([
                                 Forms\Components\Section::make('Product Information')
+                                    ->debounce()
+                                    ->collapsible()
                                     ->schema([
                                         Forms\Components\TextInput::make('name')->label('Product Title')->required(),
-                                        Forms\Components\RichEditor::make('short_description')->label('Description')
+                                        Forms\Components\RichEditor::make('details')->label('Description')
                                     ])->icon('heroicon-s-paint-brush'),
                                 Forms\Components\Section::make('General Setup')
+                                    ->collapsible()
                                     ->schema([
                                         Forms\Components\Select::make('company_id')
                                             ->label('Company')
@@ -57,7 +69,7 @@ class ProductResource extends Resource
                                             ->preload()
                                             ->live()
                                             ->required(),
-                                        Forms\Components\Select::make('company_id')
+                                        Forms\Components\Select::make('brand_id')
                                             ->label('Brand')
                                             ->options(Brand::all()->pluck('brand_name', 'id'))
                                             ->searchable()
@@ -68,16 +80,17 @@ class ProductResource extends Resource
                                             ->label('Category')
                                             ->options(Category::all()->pluck('name', 'id'))
                                             ->searchable()
+                                            ->multiple()
                                             ->preload()
                                             ->live()
                                             ->required(),
-                                        Forms\Components\Select::make('sub-category')
+                                        Forms\Components\Select::make('category_ids')
                                             ->label('Sub-Category')
                                             ->options(Category::all()->pluck('name', 'id'))
                                             ->searchable()
                                             ->preload()
-                                            ->live()
-                                            ->required(),
+                                            ->multiple()
+                                            ->live(),
                                         Forms\Components\Select::make('type')
                                             ->label('Product Type')
                                             ->options(['Manage','Un-Manage'])
@@ -100,6 +113,7 @@ class ProductResource extends Resource
 
                                 ///price
                                 Forms\Components\Section::make('Pricing & others')
+                                    ->collapsible()
                                     ->schema(
                                         [
                                             Forms\Components\TextInput::make('unit_price'),
@@ -120,6 +134,8 @@ class ProductResource extends Resource
 
                                 ///product variant
                                 Forms\Components\Section::make('Product Variation Setup')
+                                    ->collapsible()
+                                    ->icon('heroicon-s-square-3-stack-3d')
                                     ->schema([
                                         ColorPicker::make('color'),
                                         Forms\Components\Select::make('Select Attributes')
@@ -138,6 +154,8 @@ class ProductResource extends Resource
                                         DateTimePicker::make('date_on_sale_from')
                                     ]),
                                Forms\Components\Section::make('Product Image')
+                                   ->collapsible()
+                                   ->icon('heroicon-m-photo')
                                 ->schema([
                                     Forms\Components\FileUpload::make('thumbnail'),
                                     FileUpload::make('images')
@@ -162,13 +180,53 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\ImageColumn::make('thumbnail')->circular(),
+                Tables\Columns\TextColumn::make('name')->limit(20),
+                Tables\Columns\TextColumn::make('regular_price')->money('usd')->alignCenter(),
+                Tables\Columns\TextColumn::make('purchase_price')->money('usd')->alignCenter(),
+                Tables\Columns\TextColumn::make('brand.brand_name')->badge()->color(Color::Orange),
+                Tables\Columns\TextColumn::make('company.name')->badge()->color(Color::Orange),
+                Tables\Columns\TextColumn::make('unit.description')->badge()->color(Color::Orange),
+                Tables\Columns\ToggleColumn::make('status'),
             ])
             ->filters([
-                //
-            ])
+                QueryBuilder::make()
+                    ->constraints([
+                        TextConstraint::make('name'),
+                        TextConstraint::make('slug'),
+                        TextConstraint::make('sku')
+                            ->label('SKU (Stock Keeping Unit)'),
+                        TextConstraint::make('barcode')
+                            ->label('Barcode (ISBN, UPC, GTIN, etc.)'),
+                        TextConstraint::make('description'),
+                        NumberConstraint::make('old_price')
+                            ->label('Compare at price')
+                            ->icon('heroicon-m-currency-dollar'),
+                        NumberConstraint::make('price')
+                            ->icon('heroicon-m-currency-dollar'),
+                        NumberConstraint::make('cost')
+                            ->label('Cost per item')
+                            ->icon('heroicon-m-currency-dollar'),
+                        NumberConstraint::make('qty')
+                            ->label('Quantity'),
+                        NumberConstraint::make('security_stock'),
+                        BooleanConstraint::make('is_visible')
+                            ->label('Visibility'),
+                        BooleanConstraint::make('featured'),
+                        BooleanConstraint::make('backorder'),
+                        BooleanConstraint::make('requires_shipping')
+                            ->icon('heroicon-m-truck'),
+                        DateConstraint::make('published_at'),
+                    ])
+                    ->constraintPickerColumns(2),
+            ], layout: Tables\Enums\FiltersLayout::AboveContentCollapsible)
             ->actions([
-                Tables\Actions\EditAction::make(),
+
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\ViewAction::make(),
+
+                ])->icon('heroicon-m-ellipsis-horizontal')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -191,5 +249,34 @@ class ProductResource extends Resource
             'create' => Pages\CreateProduct::route('/create'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'sku', 'brand.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        /** @var Product $record */
+
+        return [
+            'Brand' => optional($record->brand)->brand_name,
+        ];
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->with(['brand']);
+    }
+
+//    public static function getNavigationBadge(): ?string
+//    {
+//        return static::$model::whereColumn('current_stock', '<', 'security_stock')->count();
+//    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 }

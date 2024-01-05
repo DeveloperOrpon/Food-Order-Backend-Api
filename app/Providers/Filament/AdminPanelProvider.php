@@ -28,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
 //            ->brandLogo(asset('images/logo.png'))
             ->path('admin')
-
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->brandName('FGI Y2G')
             ->favicon(asset('images/logo.png'))
             ->databaseNotifications()
@@ -37,7 +37,6 @@ class AdminPanelProvider extends PanelProvider
             ->registration()
             ->profile()
             ->databaseNotificationsPolling('100')
-
             ->colors([
                 'primary' => Color::Rose,
             ])

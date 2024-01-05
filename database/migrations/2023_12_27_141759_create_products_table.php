@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('category_ids', 80)->nullable();
             $table->unsignedBigInteger('brand_id')->nullable();
             $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade');
+             $table->unsignedBigInteger('company_id')->nullable();
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->string('added_by')->nullable();
             $table->string('units')->nullable();
             $table->integer('min_qty')->default(1);

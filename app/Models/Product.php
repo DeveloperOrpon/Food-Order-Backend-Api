@@ -107,11 +107,20 @@ class Product extends Model
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    } public function categories()
+    {
+        return $this->hasMany(Category::class,'id');
     }
 
     public function brand()
     {
         return $this->belongsTo(Brand::class);
+    }  public function company()
+    {
+        return $this->belongsTo(Company::class,'company_id');
+    } public function unit()
+    {
+        return $this->belongsTo(Unit::class,'units');
     }
 
     public function shop()
